@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Storage (uploads + outputs are ephemeral)
+backend/storage/uploads/
+backend/storage/outputs/
+
+# Model weights (huge, downloaded at runtime)
+*.pth
+*.th
+
+# Env
+.env
+.env.local
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db

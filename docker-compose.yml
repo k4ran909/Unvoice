@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    environment:
+      STORAGE_DIR: /data
+      DEMUCS_DEVICE: cpu
+      MAX_UPLOAD_MB: 50
+      CORS_ORIGINS: http://localhost,http://localhost:5173
+      JOB_TTL_SECONDS: 3600
+    volumes:
+      - backend_data:/data
+      # Optional: persist the torch hub cache across rebuilds. Comment out to
+      # always reuse the model baked into the image.
+      # - torch_cache:/models
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      backend:
+        # Wait until /api/readyz is 200 (model loaded) before serving.
+        # Without this the nginx /api proxy returns 502 for the first ~15s.
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  # Future job-queue swap target. When wired up, replace the in-memory
+  # JobStore with a Redis-backed RQ/Celery worker.
+  # redis:
+  #   image: redis:7-alpine
+  #   restart: unless-stopped
+
+volumes:
+  backend_data:
+  # torch_cache:
